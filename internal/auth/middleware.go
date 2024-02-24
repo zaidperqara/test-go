@@ -1,23 +1,23 @@
 package auth
 
 import (
-	"github.com/aenmurtic/be-hijooin-admin/internal/user"
 	"github.com/golang-jwt/jwt"
 	"net/http"
 
+	"github.com/aenmurtic/be-hijooin-admin/internal/user"
 	"github.com/gin-gonic/gin"
 )
 
 func AuthorizeJWT() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		const BearerSchema = "Bearer " // Standard prefix
+		const BearerSchema = "Bearer "
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "authorization header required"})
 			return
 		}
 
-		tokenString := authHeader[len(BearerSchema):] // Strip prefix
+		tokenString := authHeader[len(BearerSchema):]
 
 		token, err := ValidateToken(tokenString)
 		if err != nil || !token.Valid {
@@ -34,7 +34,7 @@ func AuthorizeJWT() gin.HandlerFunc {
 			return
 		}
 
-		c.Set("userID", userID) // Set in Gin context for access in route handlers
+		c.Set("user", existingUser)
 		c.Next()
 	}
 }
